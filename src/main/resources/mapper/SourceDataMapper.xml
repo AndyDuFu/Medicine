@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medicine.statistics.mapper.SourceDataMapper">
+    <select id="getDataByGender" resultType="com.medicine.statistics.model.SourceData">
+      select sex as 'name', count(*) as 'count' from patient group by sex
+    </select>
+
+    <select id="getDataByAge" resultType="com.medicine.statistics.model.SourceData">
+        select age as 'name',count(*) as 'count' from
+        (
+            select
+                case
+                    when age &gt; 0 and age &lt;= 10 then '0-10岁'
+                    when age &gt; 10 and age &lt;= 20 then '10-20岁'
+                    when age &gt; 20 and age &lt;= 30 then '20-30岁'
+                    when age &gt; 30 and age &lt;= 40 then '30-40岁'
+                    when age &gt; 40 and age &lt;= 50 then '40-50岁'
+                    when age &gt; 50 and age &lt;= 60 then '50-60岁'
+                    when age &gt; 60 and age &lt;= 70 then '60-70岁'
+                    when age &gt; 70 and age &lt;= 80 then '70-80岁'
+                    when age &gt; 80 and age &lt;= 90 then '80-90岁'
+                    when age &gt; 90 and age &lt;= 100 then '90-100岁'
+                else '100岁以上'
+            end
+            as age from patient
+        )a group by age
+    </select>
+
+    <select id="getDataByChm" resultType="com.medicine.statistics.model.SourceData">
+        select zyjb as 'name', count(*) as 'count' from diagnosis_and_treatment where zyjb != '' and zyjb is not NULL group by zyjb
+    </select>
+
+    <select id="getDataByWem" resultType="com.medicine.statistics.model.SourceData">
+        select xyjb as 'name', count(*) as 'count' from diagnosis_and_treatment where xyjb != '' and xyjb is not NULL group by xyjb
+    </select>
+
+    <select id="getDataByMedicine" resultType="com.medicine.statistics.model.SourceData">
+        select name as 'name', count(*) as 'count' from medicine where name != '' and name is not NULL group by name
+    </select>
+
+</mapper>

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Resource;
+
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,8 +39,6 @@ import com.medicine.domain.from.dome.OrtherFrom;
 import com.medicine.domain.from.dome.WesternMedicineFrom;
 import com.medicine.service.PatientService;
 import com.medicine.service.VisitRecordService;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author FuDu
