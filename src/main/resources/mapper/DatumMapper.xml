@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medicine.domain.mapper.DatumMapper">
+
+    <resultMap type="DatumDTO" id="DatumDTOResult">
+        <id     property="id"      column="id"      />
+        <result property="keyName"    column="key_name"    />
+        <result property="name"    column="name"    />
+        <collection property = "attach" ofType = "com.medicine.domain.Attachment">
+            <!-- id:订单明细唯一标识
+                property：要将订单明细的唯一标识映射到com.shagou.mybatis.po.Orderdetail哪个属性
+             -->
+            <id column = "aid" property = "id"/>
+            <result  property = "fileName" column = "file_name"/>
+            <result  property = "fileSize" column = "file_size"/>
+            <result  property = "filePath" column = "file_path"/>
+            <result  property = "type" column = "type"/>
+            <result  property = "createDate" column = "create_date"/>
+        </collection>
+    </resultMap>
+
+    <select id="findByList" parameterType="DatumDTO" resultMap="DatumDTOResult">
+        select
+               d.*, a.id aid, a.file_name, a.file_size, a.file_path, a.type, a.create_date
+            from datum d left join attachment a on d.id = a.datum_id
+            where 1=1
+        <if test="title != null and title != ''">AND d.name like concat('%', #{title}, '%')</if>
+        <if test="key != null and key != ''">AND d.key_name like concat('%', #{key}, '%')</if>
+    </select>
+
+
+
+</mapper>

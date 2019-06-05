@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medicine.domain.mapper.VisitRecordMapper">
+
+    <resultMap type="VisitRecord" id="VisitRecordResult">
+        <id     property="id"      column="id"      />
+        <result property="createDate"    column="create_date"    />
+        <result property="visitTimes"    column="visit_times"    />
+        <result property="status"    column="status"    />
+        <association property="patient" column="p_id" javaType="Patient" resultMap="patientResult"/>
+        <association property="diagnosisAndtreatment"    column="diagnosis_treatment_id" javaType="DiagnosisAndTreatment" resultMap="diagnosisAndTreatmentResult"/>
+        <association property="diagnosisOfZh"    column="diagnosis_zh_id" javaType="DiagnosisOfZh" resultMap="diagnosisOfZhResult"/>
+        <association property="diagnosisOfWe"    column="diagnosis_we_id" javaType="DiagnosisOfWe" resultMap="diagnosisOfWeResult"/>
+        <association property="otherMessage"    column="other_id" javaType="OtherMessage" resultMap="otherMessageResult"/>
+    </resultMap>
+
+    <resultMap type="Patient" id="patientResult">
+        <id     property="id"      column="id"      />
+        <result property="cardId"    column="cardId"    />
+        <result property="name"    column="name"    />
+        <result property="sex"    column="sex"    />
+        <result property="phone"    column="phone"    />
+        <result property="birthplace"    column="birthplace"    />
+        <result property="visitTime"    column="visit_time"    />
+        <result property="zipCode"    column="zip_code"    />
+        <result property="marriage"    column="marriage"    />
+        <result property="citizenship"    column="citizenship"    />
+        <result property="profession"    column="profession"    />
+        <result property="ethnic"    column="ethnic"    />
+        <result property="address" column="address" />
+        <result property="firstDate" column="firstDate" />
+        <result property="createDate" column="create_date" />
+        <result property="time" column="time" />
+    </resultMap>
+
+
+
+    <resultMap type="DiagnosisAndTreatment" id="diagnosisAndTreatmentResult">
+        <id     property="id"      column="id"      />
+        <result property="zyjb"    column="zyjb"    />
+        <result property="xyjb"    column="xyjb"    />
+        <result property="zyzh"    column="zyzh"    />
+        <result property="zzzf"    column="zzzf"    />
+        <result property="zfm"    column="zfm"    />
+        <result property="type"    column="type"    />
+        <result property="number"    column="number"    />
+        <result property="doctor"    column="doctor"    />
+        <result property="medicineC"    column="medicineC"    />
+        <result property="medicineW"    column="medicineW"    />
+        <result property="other"    column="other"    />
+
+        <collection property = "medicine" ofType = "com.medicine.domain.attiendRecode.Medicine">
+            <!-- id:订单明细唯一标识
+                property：要将订单明细的唯一标识映射到com.shagou.mybatis.po.Orderdetail哪个属性
+             -->
+            <id column = "id" property = "id"/>
+            <result column = "name" property = "name"/>
+            <result column = "liang" property = "liang"/>
+            <result column = "zhuyong" property = "zhuyong"/>
+            <result column = "yongfa" property = "yongfa"/>
+        </collection>
+    </resultMap>
+
+    <resultMap type="DiagnosisOfZh" id="diagnosisOfZhResult">
+        <id     property="id"      column="id"      />
+        <result property="zusu"    column="zusu"    />
+        <result property="xianbingshi"    column="xianbingshi"    />
+        <result property="jiwangshi"    column="jiwangshi"    />
+        <result property="guomingshi"    column="guomingshi"    />
+        <result property="hunyushi"    column="hunyushi"    />
+        <result property="gerenshi"    column="gerenshi"    />
+        <result property="jiazhushi"    column="jiazhushi"    />
+        <result property="sehz"    column="sehz"    />
+        <result property="shensexingtai"    column="shensexingtai"    />
+        <result property="xiongfu"    column="xiongfu"    />
+        <result property="yaobeishizhizhuajia"    column="yaobeishizhizhuajia"    />
+        <result property="pifimaofa"    column="pifimaofa"    />
+        <result property="toumainwuguanjinxiang"    column="toumainwuguanjinxiang"    />
+        <result property="qinahoueryinjipaixiewu"    column="qinahoueryinjipaixiewu"    />
+        <result property="maizhen"    column="maizhen"    />
+        <result property="wenzhen"    column="wenzhen"    />
+        <result property="qita"    column="maizhen"    />
+        <result property="zhenzhuang"    column="zhenzhuang"    />
+        <result property="shezheng"    column="shezheng"    />
+        <result property="maizhenSel"    column="maizhen_sel"    />
+
+        <association property="westernMedicine"    column="shezhenimg_id" javaType="com.medicine.domain.attiendRecode.WesternMedicine" resultMap="WesternMedicineResult"/>
+    </resultMap>
+
+    <resultMap type="WesternMedicine" id="WesternMedicineResult">
+        <id     property="id"      column="we_id"      />
+        <result property="text"    column="we_text"    />
+        <result property="name" column="we_name" />
+        <collection property = "img" ofType = "com.medicine.domain.attiendRecode.Image">
+            <!-- id:订单明细唯一标识
+                property：要将订单明细的唯一标识映射到com.shagou.mybatis.po.Orderdetail哪个属性
+             -->
+            <id column = "id" property = "id"/>
+            <result column = "img_name" property = "name"/>
+            <result column = "img_status" property = "status"/>
+            <result column = "img_url" property = "url"/>
+        </collection>
+    </resultMap>
+
+    <resultMap type="DiagnosisOfWe" id="diagnosisOfWeResult">
+        <id     property="id"      column="id"      />
+        <result property="tigejiancha"    column="tigejiancha"    />
+
+        <collection property = "westernMedicines" ofType = "com.medicine.domain.attiendRecode.WesternMedicine">
+            <!-- id:订单明细唯一标识
+                property：要将订单明细的唯一标识映射到com.shagou.mybatis.po.Orderdetail哪个属性
+             -->
+            <id     property="id"      column="we_id"      />
+            <result property="text"    column="we_text"    />
+            <result property="name" column="we_name" />
+            <collection property = "img" ofType = "com.medicine.domain.attiendRecode.Image">
+                <!-- id:订单明细唯一标识
+                    property：要将订单明细的唯一标识映射到com.shagou.mybatis.po.Orderdetail哪个属性
+                 -->
+                <id column = "we_img_id" property = "id"/>
+                <result column = "we_img_name" property = "name"/>
+                <result column = "we_img_status" property = "status"/>
+                <result column = "we_img_url" property = "url"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+
+
+    <resultMap type="OtherMessage" id="otherMessageResult">
+        <id     property="id"      column="id"      />
+        <result property="zylxpj"    column="zylxpj"    />
+
+        <result property="xylxpj"    column="xylxpj"    />
+        <result property="date"    column="date"    />
+        <result property="huifangren"    column="huifangren"    />
+        <result property="huifangneirong"    column="huifangneirong"    />
+        <result property="qita"    column="qita"    />
+        <result property="lsdy"    column="lsdy"    />
+        <result property="grxd"    column="grxd"    />
+        <result property="zjdp"    column="zjdp"    />
+    </resultMap>
+
+
+    <resultMap type="PlatformManager" id="PlatformManagerResult">
+        <id     property="id"      column="id"      />
+        <result property="fClass"    column="f_class"    />
+        <result property="isMenu"    column="is_menu"    />
+        <result property="type"    column="type"    />
+        <result property="sysType"    column="sys_type"    />
+        <result property="name"    column="name"    />
+    </resultMap>
+
+    <sql id="selectConfigVo">
+        select d.*, p.* , m.*, z.*, w.*, o.*, me.*, img.name img_name, img.status img_status, img.url img_url,
+        mm.name we_name, mm.id we_id, mm.text we_text, im.name we_img_name,im.status we_img_status, im.url we_img_url
+        from visit_record d
+        LEFT JOIN patient p on p.id = d.p_id
+        LEFT JOIN diagnosis_and_treatment m on d.diagnosis_treatment_id = m.id
+        LEFT JOIN medicine me On m.id = me.dat_id
+        LEFT JOIN diagnosis_of_zh z on d.diagnosis_zh_id = z.id
+        LEFT JOIN western_medicine wms On z.shezhenimg_id = wms.id
+        LEFT JOIN image img On img.western_id = wms.id
+        LEFT JOIN diagnosis_of_we w on d.diagnosis_we_id = w.id
+        LEFT JOIN western_medicine mm On mm.d_of_we_id = w.id
+        LEFT JOIN image im On im.western_id = mm.id
+        LEFT JOIN other_message o ON  d.other_id = o.id
+        <where> d.status = 1
+        <if test="name != null and name != ''">AND p.NAME like concat('%', #{name}, '%')</if>
+        <if test="zfm != null and zfm != ''">AND m.zfm like concat('%', #{zfm}, '%')</if>
+        <if test="xyjb != null and xyjb != ''">AND m.xyjb like concat('%', #{xyjb}, '%')</if>
+        <if test="zyjb != null and zyjb != ''">AND m.zyjb like concat('%', #{zyjb}, '%')</if>
+        <if test="zyzh != null and zyzh != ''">AND m.zyzh like concat('%', #{zyzh}, '%')</if>
+        <if test="zhenzhuang != null and zhenzhuang != ''">AND z.zhenzhuang like concat('%', #{zhenzhuang}, '%')</if>
+        <if test="doctor != null and doctor != ''">AND m.doctor like concat('%', #{doctor}, '%')</if>
+        </where>
+	</sql>
+
+    <sql id="selectConfig">
+		select d.*, p.* , m.*, z.*, w.*, o.*, me.*, img.name img_name, img.status img_status, img.url img_url,
+		      mm.name we_name, mm.id we_id, mm.text we_text, im.name we_img_name,im.status we_img_status, im.url we_img_url
+		      from visit_record d
+		      LEFT JOIN patient p on p.id = d.p_id
+		      LEFT JOIN diagnosis_and_treatment m on d.diagnosis_treatment_id = m.id
+		      LEFT JOIN medicine me On m.id = me.dat_id
+		      LEFT JOIN diagnosis_of_zh z on d.diagnosis_zh_id = z.id
+		      LEFT JOIN western_medicine wms On z.shezhenimg_id = wms.id
+		      LEFT JOIN image img On img.western_id = wms.id
+		      LEFT JOIN diagnosis_of_we w on d.diagnosis_we_id = w.id
+		      LEFT JOIN western_medicine mm On mm.d_of_we_id = w.id
+		      LEFT JOIN image im On im.western_id = mm.id
+		      LEFT JOIN other_message o ON  d.other_id = o.id
+		      where d.status = 1  
+		      <if test="minAge &lt; maxAge">
+		      	and p.age between #{minAge} and #{maxAge}
+		      </if>
+			  <if test="startDate != endDate">
+			  	and d.create_date between #{startDate} and #{endDate}
+			  </if>
+			  <if test="null != name and '' != name">
+				and ( 
+					p.name like concat('%', #{name},'%') or
+					m.zfm like concat('%', #{zfm},'%') or
+					m.xyjb like concat('%', #{xyjb}, '%') or
+					m.zyjb like concat('%', #{zyjb}, '%') or
+					m.zyzh like concat('%', #{zyzh}, '%') or
+					m.zzzf like concat('%', #{zzzf}, '%') or
+					m.type like concat('%', #{type}, '%') or
+					m.medicinec like concat('%', #{medicinec}, '%') or
+					m.medicinew like concat('%', #{medicinew}, '%') or
+					m.doctor like concat('%', #{doctor}, '%') or
+					mm.text like concat('%', #{text}, '%') or
+					me.name like concat('%', #{meName}, '%') or
+					me.zhuyong like concat('%', #{zhuyong}, '%') or
+					w.tigejiancha like concat('%', #{tigejiancha}, '%') or
+					z.zhenzhuang like concat('%', #{zhenzhuang}, '%')
+				)		
+			  </if>
+		order by p.name asc
+    </sql>
+
+    <select id="findAll" parameterType="VisitRecord" resultMap="VisitRecordResult">
+        <!-- <include refid="selectConfigVo"/> -->
+        <include refid="selectConfig"/>
+    </select>
+
+
+
+
+</mapper>

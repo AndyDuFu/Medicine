@@ -1,0 +1,79 @@
+server:
+  port: 9090
+  ip: 127.0.0.1
+spring:
+  http:
+    multipart:
+      max-file-size: 30Mb
+      max-request-size: 30Mb
+  datasource:
+    url: jdbc:mysql://116.62.201.135:3306/medicine?useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: 41e7ea6a3a
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+  redis:
+    port: 6379
+    host: 114.215.68.43
+    password: sVDPyKB7dvgJGANq5Mda
+    jedis:
+      pool:
+        max-active: 100
+        max-idle: 5
+        max-wait: -1
+        min-idle: 0
+    database: 0
+    timeout: 10000
+  session:
+    store-type: redis
+
+#web:
+   # upload-path:  /home/web/webapps
+   # file-path: /home/web/webapps/files
+   # img-path: /home/web/webapps/img/
+   # file-dowload: /home/web/webapps/file/
+    
+web:
+    upload-path: /alidata/medicine/upload
+    file-path: /alidata/medicine/files
+    img-path: /alidata/medicine/img/
+    file-dowload: /alidata/medicine/download/
+
+
+
+########## Mybatis 自身配置 ##########
+mybatis:
+ # 搜索指定包别名
+  typeAliasesPackage: com.medicine.domain
+  mapper-locations: classpath:mapper/*Mapper.xml
+  configLocation: classpath:mapper/mybatis-config.xml
+  # 驼峰命名规范 如：数据库字段是  order_id 那么 实体字段就要写成 orderId
+#  configuration:
+#  map-underscore-to-camel-case: true
+#  ########## 通用Mapper ##########
+## 主键自增回写方法,默认值MYSQL,详细说明请看文档
+#mapper:
+#  identity: MYSQL
+#  mappers: tk.mybatis.mapper.common.BaseMapper
+#  # 设置 insert 和 update 中，是否判断字符串类型!=''
+#  not-empty: true
+#  # 枚举按简单类型处理
+#  enums-as-simple-type: true
+########## 分页插件 ##########
+pagehelper:
+  helper-dialect: mysql
+  params:
+    count: countSql
+  reasonable: false
+  support-methods-arguments: true
+     
+logging:
+   file: /alidata/log/medicine/medicine.log
+   level:
+      root: INFO
+   pattern:
+      console:%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n
+      file:%d{yyyy-MM-dd HH:mm:ss}[%thread] %-5level %logger{50} - %msg%n
+

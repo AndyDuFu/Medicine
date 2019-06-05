@@ -1,0 +1,66 @@
+@charset "UTF-8";
+
+.wrapper{
+    margin:0 auto;
+    width:960px;
+    height:100%;
+}
+.M-box,.M-box1,.M-box2{
+	position: relative;
+    text-align: center;
+  	zoom: 1;
+}
+.M-box:before,.M-box:after,.M-box1:before,.M-box1:after ,.M-box2:before,.M-box2:after {
+    content:"";
+    display:table;
+}
+.M-box:after,.M-box1:after,.M-box2:after{
+	clear:both;
+	overflow:hidden;
+}
+.M-box span,.M-box1 span,.M-box2 span{
+	float:left;
+	margin:0 5px;
+	width: 28px;
+    height: 28px;
+    line-height: 28px;
+    color: #bdbdbd;
+    font-size: 12px;
+}
+.M-box .active,.M-box1 .active,.M-box2 .active{
+	float:left;
+	margin:0 5px;
+	width: 28px;
+    height: 28px;
+    line-height: 28px;
+    background: #C0C0C0;
+    color: #fff;
+    font-size: 12px;
+    border: 1px solid #C0C0C0;
+    border-radius:100%;
+}
+.M-box a,.M-box1 a,.M-box2 a{
+	float:left;
+	margin:0 5px;
+	width: 28px;
+    height: 28px;
+    line-height: 28px;
+    background: #fff;
+    border: 1px solid #C0C0C0;
+    color: #bdbdbd;
+    font-size: 12px;
+    border-radius:100%;
+}
+.M-box a:hover,.M-box1 a:hover,.M-box2 a:hover{
+	color:#fff;
+    background: #FF3333;
+}
+.M-box .next,.M-box .prev,.M-box1 .next,.M-box1 .prev{
+	font-family: "Simsun";
+    font-size: 1spx;
+    font-weight: bold;
+}
+.now,.count{
+	padding:0 5px;
+	color:#f00;
+}

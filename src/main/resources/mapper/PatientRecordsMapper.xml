@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medicine.domain.mapper.PatientRecordsMapper">
+	<select id="getPatientRecords" resultType="com.medicine.batch.install.model.PatientRecord">
+		select p.name, p.sex, p.age, p.phone, p.address, p.birthplace, p.zip_code as zipCode, p.marriage, p.citizenship, p.profession, p.ethnic, p.weight,
+		       dm.id as dmid, dm.zyjb, dm.xyjb, dm.zyzh, dm.zzzf, dm.zfm, dm.type, dm.number, dm.doctor, dm.medicinec, dm.medicinew, dm.other, "" as medicine,
+		       dw.tigejiancha,
+			   dz.zusu, dz.xianbingshi, dz.jiwangshi, dz.guomingshi, dz.hunyushi, dz.gerenshi, dz.jiazhushi, dz.sehz, dz.shensexingtai, dz.xiongfu, 
+			   dz.yaobeishizhizhuajia, dz.pifimaofa, dz.toumainwuguanjinxiang, dz.qinahoueryinjipaixiewu, dz.maizhen, dz.wenzhen, dz.qita as dzqita, 
+		       dz.zhenzhuang, dz.shezheng, dz.maizhen_sel as maizhenSel,
+			   o.zylxpj, o.xylxpj, o.date, o.huifangren, o.huifangneirong, o.qita as oqita, o.lsdy, o.grxd, o.zjdp,
+			   v.create_date as createDate
+		from visit_record v 
+		left join patient p on p.id = v.p_id
+		left join diagnosis_and_treatment dm on dm.id = v.diagnosis_treatment_id
+		left join diagnosis_of_we dw on dw.id = diagnosis_we_id
+		left join diagnosis_of_zh dz on dz.id = diagnosis_zh_id
+		left join other_message o on o.id = other_id;
+	</select>
+</mapper>

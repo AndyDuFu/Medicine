@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.medicine.domain.mapper.PlatformManagerDataMapper">
+
+    <resultMap type="com.medicine.domain.menu.PlatformManagerData" id="PlatformManagerDataResult">
+        <id property="id" column="id"/>
+        <result property="x1" column="x1"/>
+        <result property="x2" column="x2"/>
+        <result property="x3" column="x3"/>
+        <result property="x4" column="x4"/>
+        <result property="x5" column="x5"/>
+        <result property="x6" column="x6"/>
+        <result property="x7" column="x7"/>
+        <result property="x8" column="x8"/>
+        <result property="x9" column="x9"/>
+        <result property="x10" column="x10"/>
+        <result property="x11" column="x11"/>
+        <result property="x12" column="x12"/>
+        <result property="x13" column="x13"/>
+        <result property="x14" column="x14"/>
+        <result property="x15" column="x15"/>
+        <result property="x16" column="x16"/>
+        <result property="x17" column="x17"/>
+        <result property="x18" column="x18"/>
+        <result property="x19" column="x19"/>
+        <result property="x20" column="x20"/>
+        <result property="x21" column="x21"/>
+        <result property="x22" column="x22"/>
+        <result property="x23" column="x23"/>
+        <result property="x24" column="x24"/>
+        <result property="x25" column="x25"/>
+        <association property="platformManager" column="pm_id" javaType="PlatformManager"
+                     resultMap="PlatformManagerResult"/>
+    </resultMap>
+
+
+    <resultMap type="PlatformManager" id="PlatformManagerResult">
+        <id property="id" column="id"/>
+        <result property="fClass" column="f_class"/>
+        <result property="isMenu" column="is_menu"/>
+        <result property="type" column="type"/>
+        <result property="sysType" column="sys_type"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
+    <sql id="selectConfigVo">
+        select
+          d.id, d.x1, d.x2, d.x3, d.x4, d.x5, d.x6, d.x7, d.x8, d.x9, d.x10, d.x11, d.x12, d.x13, d.x14, d.x15, d.x16, d.x17, d.x18, d.x19, d.x20, d.x21, d.x22, d.x23, d.x24, d.x25,
+          m.f_class, m.is_menu, m.type, m.sys_type, m.name
+        from platform_manager_data d LEFT JOIN platform_manager m on d.pm_id = m.id
+    </sql>
+
+    <select id="selectPlatformManagerDataList" parameterType="PlatformManagerData"
+            resultMap="PlatformManagerDataResult">
+        <include refid="selectConfigVo"/>
+        <where>
+            m.sys_type = "zy"
+            <if test="name != null and name != ''">
+                AND m.name like concat('%', #{name}, '%')
+            </if>
+
+            <if test="jy != null and jy != ''">
+                AND d.x12 like concat('%', #{jy}, '%')
+            </if>
+            <if test="xwgj != null and xwgj != ''">
+                AND d.x16 like concat('%', #{xwgj}, '%')
+                OR d.x17 like concat('%', #{xwgj}, '%')
+                OR d.x18 like concat('%', #{xwgj}, '%')
+            </if>
+            <if test="glzz != null and glzz != ''">
+                AND d.x20 like concat('%', #{glzz}, '%')
+            </if>
+            <if test="xz != null and xz != ''">
+                AND d.x11 like concat('%', #{xz}, '%')
+            </if>
+        </where>
+    </select>
+    
+    <select id="likePlatformManagerDataList" parameterType="PlatformManagerData" resultMap="PlatformManagerDataResult">
+        <include refid="selectConfigVo"/>
+        <where>
+            m.sys_type = "zy" 
+            <if test="null != name and '' != name">
+	            and (
+	            	m.name like concat('%', #{name}, '%') or d.x12 like concat('%', #{jy}, '%') or d.x16 like concat('%', #{xwgj}, '%') or 
+	            	d.x17 like concat('%', #{xwgj}, '%') or d.x18 like concat('%', #{xwgj}, '%') or d.x20 like concat('%', #{glzz}, '%') or 
+	            	d.x11 like concat('%', #{xz}, '%')
+	            )            
+            </if>
+        </where>
+    </select>
+
+    <resultMap type="com.medicine.domain.dto.attiendRecode.FjManagerDTO" id="FjManagerDTOResult">
+        <id property="id" column="id"/>
+        <result property="key" column="id"/>
+        <result property="gytj" column="gytj"/>
+        <result property="cd" column="cd"/>
+        <result property="jx" column="jx"/>
+        <result property="cfys" column="cfys"/>
+        <result property="cfly" column="cfly"/>
+        <result property="jfff" column="jfff"/>
+        <result property="xyjb" column="zzxyjb"/>
+        <result property="zyjb" column="zzzyjb"/>
+        <!--<result property="zyzh"    column="zyzh"    />-->
+        <result property="fjgx" column="fjgx"/>
+        <result property="fjzz" column="fjzz"/>
+        <result property="zyzz" column="zyzz"/>
+        <result property="bz" column="bz"/>
+
+    </resultMap>
+
+    <select id="findByFj" parameterType="FjManagerDTO" resultMap="FjManagerDTOResult">
+        <include refid="selectByFj"/>
+    </select>
+
+    <select id="likeByFj" parameterType="FjManagerDTO" resultMap="FjManagerDTOResult">
+        <include refid="selectLikeByFj"/>
+    </select>
+
+    <!--
+         不得不注释一下。。。
+         这样查询的原因是。。。
+         在添加为医案的时候。。只能在病人添加病例后添加未医案
+         所以保存为医案的方剂在另一个的地方也就是在病人病例里面
+         而真正保存为医案是在医案管理里面
+         所以需要查询的时候两个地方会连查询。但是有些字段在病人记录里面没有
+         所以就用空字段或者默认字段来表示。其中status表示是否来自于医案
+     -->
+    <sql id="selectByFj">
+        select id,
+        name,
+        gytj, cd, jx, cfys, cfly, jfff, zzxyjb,
+        zzzyjb, fjgx, fjzz, zyzz, bz, syzh, status, mid
+        from (
+        <include refid="yiAnQuery"/> where status = 1
+        union
+        <include refid="syzhQuery"/> where m.sys_type = "fj" and m.type != 1
+        ) d
+        where 1=1
+        <include refid="queryCondition"/>
+    </sql>
+    
+    <sql id="selectLikeByFj">
+        select id,
+        name,
+        gytj, cd, jx, cfys, cfly, jfff, zzxyjb,
+        zzzyjb, fjgx, fjzz, zyzz, bz, syzh, status, mid
+        from (
+        <include refid="yiAnQuery"/> where status = 1
+        union
+        <include refid="syzhQuery"/> where m.sys_type = "fj" and m.type != 1
+        ) d
+        where 1=1 
+        <if test="null != name and '' != name">
+	        and (
+	        	d.name like concat('%', #{name}, '%') or 
+	        	d.syzh like concat('%', #{syzh}, '%') or
+	        	d.cfly like concat('%', #{cfly}, '%') or
+	        	d.cfys like concat('%', #{cfys}, '%') or
+	        	d.zzzyjb like concat('%', #{zyjb}, '%') or
+	        	d.zzxyjb like concat('%', #{xyjb}, '%') or
+	            d.fjgx like concat('%', #{fjgx}, '%') or
+	            d.zyzz like concat('%', #{zyzz}, '%') or
+	            d.fjzz like concat('%', #{fjzz}, '%') or
+	            d.gytj like concat('%', #{gytj}, '%')
+	        )
+        </if>
+    </sql>
+
+    <sql id="yiAnQuery">
+         select
+                d.id,
+                m.zfm name,
+                 '内服' as gytj, '现代' as cd, '散' as jx, m.doctor as cfys, '' as cfly, '' as jfff, m.zyjb zzzyjb, m.xyjb
+                zzxyjb, m.zyzh syzh, '' as fjgx, '' as fjzz, z.zhenzhuang zyzz, '' as bz,  d.status, m.id mid
+            from visit_record d
+                LEFT JOIN patient p on p.id = d.p_id
+                LEFT JOIN diagnosis_and_treatment m on d.diagnosis_treatment_id = m.id
+                LEFT JOIN diagnosis_of_zh z on d.diagnosis_zh_id = z.id
+    </sql>
+
+    <sql id="syzhQuery">
+         select
+                m.id,
+                m.name,   d.x9 gytj, d.x2 cd, d.x11 jx, d.x4 cfys, d.x3 cfly, d.x10 as jfff, d.x19 as
+                zzzyjb, d.x18 as zzxyjb, x12 as syzh, x5 as fjgx, x8 as fjzz, x17 as zyzz, x1 as bz, 0 as status,  m.id mid
+              from  platform_manager m
+              LEFT JOIN platform_manager_data d on d.pm_id = m.id
+
+    </sql>
+
+    <sql id="queryCondition">
+        <if test="name != null and name != ''">
+            AND d.name like concat('%', #{name}, '%')
+        </if>
+        <if test="syzh != null and syzh != ''">
+            AND d.syzh like concat('%', #{syzh}, '%')
+        </if>
+        <if test="cfly != null and cfly != ''">
+            AND d.cfly like concat('%', #{cfly}, '%')
+        </if>
+        <if test="cfys != null and cfys != ''">
+            AND d.cfys like concat('%', #{cfys}, '%')
+        </if>
+        <if test="zyjb != null and zyjb != ''">
+            AND d.zzzyjb like concat('%', #{zyjb}, '%')
+        </if>
+        <if test="xyjb != null and xyjb != ''">
+            AND d.zzxyjb like concat('%', #{xyjb}, '%')
+        </if>
+        <if test="fjgx != null and fjgx != ''">
+            AND d.fjgx like concat('%', #{fjgx}, '%')
+        </if>
+        <if test="zyzz != null and zyzz != ''">
+            AND d.zyzz like concat('%', #{zyzz}, '%')
+        </if>
+        <if test="fjzz != null and fjzz != ''">
+            AND d.fjzz like concat('%', #{fjzz}, '%')
+        </if>
+        <if test="gytj != null and gytj != ''">
+            AND d.gytj like concat('%', #{gytj}, '%')
+        </if>
+        <if test="lyya != null and lyya != '' or lyya == '0'.toString()">
+            AND d.status = #{lyya}
+        </if>
+    </sql>
+
+    <!-- 统计证候 -->
+    <select id="syzhCount" parameterType="StatementDTO" resultMap="StatementDTOResult">
+        select
+        d.syzh name , 0 as count
+        from (<include refid="selectByFj"/>) d
+        where d.syzh != null or d.syzh != ''
+    </select>
+
+    <resultMap type="StatementDTO" id="StatementDTOResult">
+        <id property="name" column="name"/>
+        <result property="count" column="count"/>
+    </resultMap>
+
+
+    <!--统计药物-->
+    <select id="MedicineQuery" parameterType="StatementDTO" resultMap="StatementDTOResult">
+        select
+        d.cname name , count(*) count
+        from (<include refid="findMedicine"/>) d
+        GROUP BY d.cname
+    </select>
+
+
+    <sql id="findMedicine">
+            select * from (
+            select m.`name` cname, a.* from
+            medicine m left join (
+              <include refid="yiAnQuery"/>
+            ) a on a.mid = m.dat_id
+            UNION
+            select p.`name` cname, a.* from prescription p left join (
+              <include refid="syzhQuery"/> where m.sys_type = "fj"
+            )
+            a on p.menu_id = a.mid
+            ) d where 1=1  <include refid="queryCondition"/>
+
+    </sql>
+
+    <sql id = "countZY">
+        select z.x18 gj, z.x17 ww, z.x16 sq from
+        (<include refid="findMedicine"></include>) m left JOIN
+        (<include refid="selectConfigVo"/> where m.sys_type = "zy")  z
+         on m.cname = z.name
+
+    </sql>
+
+
+    <resultMap type="CountDTO" id="CountDTOResult">
+        <id property="id" column="id"/>
+        <result property="gj" column="gj"/>
+        <result property="sq" column="sq"/>
+        <result property="ww" column="ww"/>
+    </resultMap>
+
+    <select id="selectCountZY" parameterType="CountDTO"
+            resultMap="CountDTOResult">
+    <include refid="countZY"/>
+    </select>
+</mapper>

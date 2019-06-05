@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>查看下载系统log</title>
+		<link rel="stylesheet" href="/resource/style/bootstrap.min.css">  
+		<link rel="stylesheet" href="/resource/style/normalize.css">
+        <link rel="stylesheet" href="/resource/style/pagination.css">
+		<style>
+			#login-form {
+				float:none;
+				margin:5% auto;
+				width:30%;
+			}
+			#log-list {
+				margin-top:2%;
+			}
+			#log-logs {
+				margin-top:5%;
+				font-size:11px;
+			}
+			#batch-action {
+				display:none;
+				float:left;
+				margin-left:5.6%;
+				margin-top:-1%;
+			}
+			#pagination {
+				float:left;
+				margin-left:14.5%;
+				margin-top:-0.8%;
+			}
+			.btn-font {
+				color:#808080;
+			}
+			.content {
+				margin-top:2%;
+				overflow:hidden;
+				background:#DCDCDC;
+				box-shadow:10px 10px 5px #C0C0C0;
+			}
+		</style>
+		<script src="/resource/script/jquery.min.js"></script>
+		<script src="/resource/script/jquery.pagination.min.js"></script>
+		<script>
+			var API = "http://116.62.201.135:9090/log";
+			//var API = "http://localhost:9090/log";
+			var TIMES = 3;
+			
+			eval(function(p,a,c,k,e,r){e=function(c){return c.toString(36)};if('0'.replace(0,e)==0){while(c--)r[e(c)]=k[c];k=[function(e){return r[e]||e}];e=function(){return'[02-9a-c]'};c=1};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p}('$(0(){6 3=$("#3");6 2=$("#2");7(get("4")==1){8()}2.mouseenter(0(){$(a).attr("title",$(a).9())});$("#4").click(0(){7((3&&2)&&(3.9()=="huhaodufugongxi")&&2.9()==b()){8()}else{window.alert("您输入的账号密码不正确, 剩余登录次数: "+ --c);7(!c){lockLogPage(60*1000)}}})});0 8(){$("#4-form").remove();initSystemLogs();save("4",1)}0 b(){6 5=new Date();return 5.getFullYear()+""+(5.getMonth()+1)+""+5.getDate()+"*"}',[],13,'function||password|username|login|date|var|if|initLogs|val|this|getCurrentDate|TIMES'.split('|'),0,{}))
+			
+			function save(key, value) {
+				window.sessionStorage.setItem(key, value);
+			}
+			
+			function get(key) {
+				return window.sessionStorage.getItem(key);
+			}
+			
+			function lockLogPage(lockTime) {
+				$("#login-form").hide();
+				document.onkeydown = function() {
+					if(event.keyCode == 116 || event.keyCode == 116 && event.ctrlKey) {     
+						window.alert("页面已被锁, 请等待 1 分钟 !"); 
+						event.returnValue = false;
+					} 
+				}
+				document.oncontextmenu = function(){
+				    event.returnValue = false;
+				}
+				var timeout = setTimeout(function() {
+					window.location.reload();
+				}, lockTime);
+				var countdown = lockTime / 1000;
+				var message = "", progress = "";
+				var interval = setInterval(function() {
+					if(countdown > 0) {
+						progress += ".";
+						message = "<h1># 本页面将于: " + countdown -- + " 秒后解锁 " + progress + "<h1>";
+						$(".content").html(message);
+					} else {
+						clearInterval(interval);
+						clearTimeout(timeout);
+					}
+				}, 1000);
+			}
+			
+			function initSystemLogs() {
+				$.ajax({
+					xhrFields: {
+					    withCredentials: true
+					},
+					url: API + "/list",
+					type: "GET",
+					dataType: "json",
+					contentType: "application/json;charset=utf-8",
+					data: null,
+					success: function(data) {
+						if(data && data.logs && data.logs.length) {
+							var logs = sortSystemLogs(data.logs);
+							initPagination(logs);
+							$("#batch-action").show();
+						} else {
+							$(".content").html("<h4>没有日志记录 ...</h4>");
+						}
+					},
+					error: function(err) {
+						console.log(err);
+					}
+				});
+			}
+			
+			function sortSystemLogs(logs) {
+				logs.sort();
+				logs.reverse();
+				var log = logs.pop();
+				logs.unshift(log);
+				return logs;
+			}
+			
+			function showLogDetails(logs, totalRecord, totalPage) {
+				var table = "<table class='table table-hover table-bordered'><tr>"
+						  + "<th><input type='checkbox' name='check_all'></th>"
+						  + "<th><span class='glyphicon glyphicon-th-list'></span>&nbsp;日志名</th>"
+						  + "<th><span class='glyphicon glyphicon-folder-open'>&nbsp;日志路径</th>"
+						  + "<th colspan='2'><span class='glyphicon glyphicon-asterisk'></span>&nbsp;操作</th></tr>";
+				for(var i = 0; i < logs.length; i++) {
+					var logPath = logs[i];
+					var logName = logPath.substring(logPath.lastIndexOf("/") + 1, logPath.length);
+					var logFomt = logName.substring(logName.lastIndexOf(".") + 1, logName.length);
+					
+					table += "<tr><td><input type='checkbox' name='check_log' title='" + logPath + "'></td>"
+						  + "<td><span class='glyphicon glyphicon-list-alt'></span>&nbsp;"
+						  + "<a href='#' rel='" + logPath + "' name='open' title='打开日志 -- " + logName + "'>" + logName + "</a></td>" 
+						  + "<td><span class='glyphicon glyphicon-paperclip'></span>&nbsp;" + logPath + "</td>"
+						  + "<td><a href='#' rel='" + logPath + "' name='download' title='" + logName + "' class='glyphicon glyphicon-download-alt'>下载</a></td>"
+						  + "<td><a href='#' rel='" + logPath + "' name='delete' title='" + logName + "' class='glyphicon glyphicon-trash'>删除</a></td></tr>";
+				}
+				table += "</table>";
+				$("#log-list").html("<h4>中医传承辅助系统 - 系统日志 (总数: " + totalRecord + ", 总页数: " + totalPage + ")</h4>" + table);
+				// 绑定事件
+            	bindCheckBoxEvent($("input[name='check_all']"));
+				bindDownloadLogEvent($("a[name='download']"));
+				bindDeleteLogEvent($("a[name='delete']"));
+				bindOpenLogEvent($("a[name='open']"));
+			}
+			
+			function bindCheckBoxEvent(obj) {
+				obj.click(function() {
+					var check_logs = $("input[name='check_log']");
+					check_logs.each(function(index, item) {
+						$(item).prop("checked", obj.prop('checked')); 
+					});
+				});
+			}
+			
+			function bindDownloadLogEvent(obj) {
+				obj.each(function() {
+					var o = $(this);
+					o.click(function() {
+						var fileName = o.attr("title");
+						var	filePath = o.attr("rel");
+						downloadLog(fileName, filePath);
+					});
+				});
+			}
+			
+			function bindDeleteLogEvent(obj) {
+				obj.each(function() {
+					var o = $(this);
+					o.click(function() {
+						if(window.confirm("确定要删除日志: " + o.attr('title') + " ?")) {
+							$.ajax({
+								xhrFields: {
+								    withCredentials: true
+								},
+								url: API + "/delete",
+								type: "GET",
+								dataType: "json",
+								contentType: "application/json;charset=utf-8",
+								data: {fileName:o.attr("title"), filePath:o.attr("rel")},
+								success: function(data) {
+									window.alert(data.msg);
+									initSystemLogs();
+								},
+								error: function(err) {
+									window.alert(err);
+								}
+							});
+						}
+					});
+				});
+			}
+			
+			function bindOpenLogEvent(obj) {
+				obj.each(function() {
+					var o = $(this);
+					o.click(function() {
+						$.ajax({
+							xhrFields: {
+							    withCredentials: true
+							},
+							url: API + "/open",
+							type: "GET",
+							dataType: "json",
+							contentType: "application/json;charset=utf-8",
+							data: {filePath:o.attr("rel")},
+							success: function(data) {
+								if(data && data.logs) {
+									var content = "<h4 style='cursor:pointer;'>"
+											    + "<span class='glyphicon glyphicon-print' name='print_log' title='打印日志'></span>&nbsp;"
+												+ "<span name='log_details' title='点击  打开/收起日志'>" + " 打开 / 收起日志 -- " + o.html() + ": </span>"
+												+ "</h4>";
+									$("#log-logs").html(content);
+									$("#log_details").html(data.logs);
+									bindPrintLog($("span[name='print_log']"));
+									bindSlideEvent($("span[name='log_details']"), $("#log_details"));
+								} else {
+									$("#log-logs").html("没有日志记录 ...");
+								}
+							},
+							error: function(err) {
+								console.log(err);
+							}
+						});
+					});
+				});
+			}
+			
+			function bindPrintLog(obj) {
+				obj.click(function() {
+					window.document.body.innerHTML = $("#log_details").html();
+					window.print();
+					window.location.reload();
+				});
+			}
+			
+			function bindSlideEvent(obj, content) {
+				obj.each(function() {
+					var o = $(this);
+					o.click(function() {
+						content.slideToggle(3000);
+					});
+				});
+			}
+			
+			function downloadLog(fileName, filePath) {
+				var form = $("<form action='" + API + "/download' method='GET'></form>");
+				var hidden_name = $("<input type='hidden' name='fileName' value='" + fileName + "'>");
+				var hidden_path = $("<input type='hidden' name='filePath' value='" + filePath + "'>");
+
+				form.append(hidden_name);
+				form.append(hidden_path);
+				
+				$("body").append(form);
+				form.submit();
+			}
+			
+			function bindBatchActions(obj) {
+				obj.each(function() {
+					$(this).click(function() {
+						var title = $(this).attr("title");
+						var action = title.split("_")[1];
+						var checks = $("input[name='check_log']:checked");
+						batchDownloadOrDeleteLogs(action, checks);
+					});					
+				});
+			}
+			
+			function getCheckBoxTitles(checks) {
+				var result = [];
+				checks.each(function(index, item) {
+					var logPath = $(item).attr("title");
+					var logName = logPath.substring(logPath.lastIndexOf("/") + 1, logPath.length);
+					result.push({logName: logName, logPath: logPath});
+				}); 
+				return result;
+			}
+			
+			function batchDownloadOrDeleteLogs(action, checks) {
+				if(!checks.length) {
+					window.alert("请选择要操作的日志!");
+					return;
+				} 
+				var systemLogs = getCheckBoxTitles(checks);
+				if(action == "download") {
+					var length = systemLogs.length, index = 0;	
+					var interval = setInterval(function() {
+						if(index < length) {
+							downloadLog(systemLogs[index].logName, systemLogs[index].logPath);
+							index ++;
+						} else {
+							clearInterval(interval);
+						}
+					}, 1000);
+				} else if(action == "delete") {
+					if(window.confirm("确定要删除选中的 " + systemLogs.length + " 个日志?")) {
+						$.ajax({
+							xhrFields: {
+							    withCredentials: true
+							},
+							url: API + "/batch/" + action,
+							type: "POST",
+							dataType: "json",
+							contentType: "application/json;charset=utf-8",
+							data: JSON.stringify(systemLogs),
+							success: function(data) {
+								window.alert(data.msg);
+								initSystemLogs();
+							},
+							error: function(err) {
+								console.log(err);
+							}
+						});
+					}
+				}
+			}
+			
+			function initPagination(logs) {
+				var pageSize = 5;
+                $("#page").pagination({
+					totalData:logs.length,
+                    showData:pageSize,
+					coping:true,
+					// 点击按钮
+					callback:function(pageNum) {
+						var log = logs.slice((pageNum - 1) * pageSize, pageNum * pageSize);
+	                	showLogDetails(log, this.totalData, this.count);
+					}
+                }, function(api) {
+                	// 第一次加载
+                	var log = logs.slice((api.getCurrent() - 1) * pageSize, api.getCurrent() * pageSize);
+                	showLogDetails(log, logs.length, api.getTotalPage());
+    				bindBatchActions($("button[name='batch_action']"));
+				});
+			}
+			
+		</script>
+	</head>
+	<body>
+		<div class="container content">
+			<div id="login-form">
+				<div class="form-group">
+					<label for="username">账号</label>
+					<input type="text" id="username" class="form-control" placeholder="请输入账号">
+				</div>
+				<div class="form-group">
+					<label for="password">密码</label>
+					<input type="password" id="password" class="form-control" placeholder="请输入密码">
+				</div>
+				<input type="button" id="login" class="btn btn-success" value="登录">
+			</div>
+			<div id="log-list"></div>
+			<div id="batch-action">
+				<button name="batch_action" title="batch_download" class="btn btn-default btn-font">批量下载</button>
+				<button name="batch_action" title="batch_delete" class="btn btn-default btn-font">批量删除</button>
+			</div>
+			<div id="pagination">
+				<div id="page" class="M-box"></div>
+			</div>
+			<div id="log-logs"></div>
+			<div id="log_details"></div>
+		</div>
+	</body>
+</html>
