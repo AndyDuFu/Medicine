@@ -1,5 +1,7 @@
 /target/
 !.mvn/wrapper/maven-wrapper.jar
+.gitignore
+.class
 
 ### STS ###
 .apt_generated
