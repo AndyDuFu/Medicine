@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.Resource;
 
 import lombok.extern.slf4j.Slf4j;
@@ -161,7 +163,7 @@ public class BatchInstallRecords {
 			patient.setAddress(row.get(head.get(PatientEnum.ADDRESS.desc())));
 			patient.setBirthplace(row.get(head.get(PatientEnum.BIRTHPLACE.desc())));
 			patient.setZipCode(row.get(head.get(PatientEnum.ZIPCODE.desc())));
-			patient.setMarriage(Integer.parseInt(row.get(head.get(PatientEnum.MARRIAGE.desc()))));
+			patient.setMarriage(getPatientMarriedStatus(row.get(head.get(PatientEnum.MARRIAGE.desc()))));
 			patient.setCitizenship(row.get(head.get(PatientEnum.CITIZENSHIP.desc())));
 			patient.setProfession(row.get(head.get(PatientEnum.PROFESSION.desc())));
 			patient.setEthnic(row.get(head.get(PatientEnum.ETHNIC.desc())));
@@ -169,6 +171,24 @@ public class BatchInstallRecords {
 			patients.add(patient);		
 		}
 		return new ArrayList<Patient>(patients);
+	}
+
+	// 病人婚姻状态字符串解析
+	public Integer getPatientMarriedStatus(String desc) {
+		if(!StringUtils.isEmpty(desc)) {
+			// 如果传递的是数字
+			if(desc.equals(PatientEnum.MARRIED.value()) || desc.equals(PatientEnum.NOTMARRIED.value())) {
+				return Integer.parseInt(desc);
+			// 如果传递的是字符串(已婚，未婚)
+			} else {
+				if(desc.equals(PatientEnum.MARRIED.desc())) {
+					return Integer.parseInt(PatientEnum.MARRIED.value());
+				} else if(desc.equals(PatientEnum.NOTMARRIED.desc())) {
+					return Integer.parseInt(PatientEnum.NOTMARRIED.value());
+				}
+			}
+		}
+		return null;
 	}
 	
 	// 解析出就诊信息
@@ -279,11 +299,34 @@ public class BatchInstallRecords {
 	
 	// 将字符串解析成 MedicineFrom 对象集合
 	public List<MedicineFrom> parseStringToMedicineFrom(String str) {
-		List<MedicineFrom> list = new ArrayList<MedicineFrom>();
 		if(!StringUtils.isEmpty(str)) {
-			String[] strs = str.split(";");
-			for(int i = 0; i < strs.length; i++) {
-				String[] mfs = strs[i].split(",");
+			 /**
+			  * 有可能前端传递的字符串不规范，像中医院那边的垃圾，就是以空格分隔的
+			  * 暂时分两种情况：
+			  * 1. 标准模式，以 ; 分隔
+			  * 2. 垃圾模式，以空格分隔
+			  */
+			// 标准模式
+			if(str.contains(";")) {
+				List<MedicineFrom> medicineFroms = standardParseMedicine(str);
+				return medicineFroms;
+			}
+			// 垃圾模式
+			if(str.contains(" ")) {
+				List<MedicineFrom> medicineFroms = garbageParseMedicine(str);
+				return medicineFroms;
+			}
+		}
+		return null;
+	}
+
+	// 以标准模式解析医药信息
+	public List<MedicineFrom> standardParseMedicine(String str) {
+		List<MedicineFrom> list = new ArrayList<>();
+		String[] strs = str.split(";");
+		for(String medicine : strs) {
+			if(!StringUtils.isEmpty(medicine) && medicine.contains(",")) {
+				String[] mfs = medicine.split(",");
 				MedicineFrom medicineFrom = new MedicineFrom();
 				medicineFrom.setName(mfs[0]);
 				medicineFrom.setLiang(mfs[1]);
@@ -293,6 +336,49 @@ public class BatchInstallRecords {
 			}
 		}
 		return list;
+	}
+
+	// 以垃圾模式解析医药信息
+	public List<MedicineFrom> garbageParseMedicine(String str) {
+		List<MedicineFrom> list = new ArrayList<>();
+		String[] strs = str.split(" ");
+		for(String medicine : strs) {
+			if(!StringUtils.isEmpty(medicine)) {
+				Map<String, String> m = parseMedicineStrs(medicine);
+				MedicineFrom medicineFrom = new MedicineFrom();
+				medicineFrom.setName(m.get("medicineName"));
+				medicineFrom.setLiang(m.get("consumption"));
+				medicineFrom.setZhuyong("");
+				medicineFrom.setYongfa("");
+				list.add(medicineFrom);
+			}
+		}
+		return list;
+	}
+
+	// 解析像 党参20g 这样的字符串
+	public Map<String, String> parseMedicineStrs(String str) {
+		Map<String, String> m = new HashMap<>();
+		Pattern pattern = Pattern.compile("[^0-9]");
+		Matcher matcher = pattern.matcher(str);
+		// 用量
+		String consumption = matcher.replaceAll("").trim();
+		// 药名
+		String medicineName = str.replace(consumption, "").replace("g", "").trim();
+		m.put("consumption", consumption);
+		m.put("medicineName", medicineName);
+		return m;
+	}
+
+	public static void main(String[] args) {
+		String a = "党参20g";
+		String reg = "[^0-9]";
+		Pattern pattern = Pattern.compile(reg);
+		Matcher matcher = pattern.matcher(a);
+		String s = ((Matcher) matcher).replaceAll("").trim();
+		String b = a.replace(s, "");
+		System.out.println(s);
+		System.out.println(b);
 	}
 	
 	// 将字符串解析成 WesternMedicine 对象集合 
