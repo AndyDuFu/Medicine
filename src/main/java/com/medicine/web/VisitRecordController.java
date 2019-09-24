@@ -3,6 +3,7 @@ package com.medicine.web;
 import com.medicine.domain.dto.PatientRecodDTO;
 import com.medicine.domain.dto.VisitRecordDTO;
 import com.medicine.domain.from.VisitRecordForm;
+import com.medicine.domain.from.dome.DiagnosisOfZhFrom;
 import com.medicine.service.VisitRecordService;
 import com.medicine.util.JsonResult;
 import io.swagger.annotations.Api;
@@ -10,6 +11,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.spring.web.json.Json;
+
+import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("/apiM/patient")
@@ -38,4 +41,5 @@ public class VisitRecordController {
         visitRecordService.setYiyan(id);
         return JsonResult.builder().data("成功").build();
     }
+
 }

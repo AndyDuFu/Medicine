@@ -33,4 +33,5 @@ public interface VisitRecordService {
     
     // 批量导入病患就诊记录
     void batchInstall(List<VisitRecordForm> visitRecordForms);
+
 }
