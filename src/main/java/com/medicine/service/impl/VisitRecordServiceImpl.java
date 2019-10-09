@@ -296,8 +296,12 @@ public class VisitRecordServiceImpl implements VisitRecordService {
     // 批量导入就诊信息
 	@Override
 	public void batchInstall(List<VisitRecordForm> visitRecordForms) {
-		for(VisitRecordForm visitRecordForm : visitRecordForms) {
-			save(visitRecordForm);
-		}
+        for(VisitRecordForm visitRecordForm : visitRecordForms) {
+            try {
+                save(visitRecordForm);
+            } catch (Exception e) {
+                log.error("save visitRecord(" + visitRecordForm + ") fail: " + e.getMessage());
+            }
+        }
 	}
 }

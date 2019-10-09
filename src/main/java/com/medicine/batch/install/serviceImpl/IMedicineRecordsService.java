@@ -14,6 +14,6 @@ public interface IMedicineRecordsService {
 	void modifyWMRecord(WMRecord wmRecord);
 	void modifyDATParam(DATParam datParam);
 	void modifyDATRecord(DATRecord datRecord);
-	void modifyMedicines(List<Medicine> medicines);
+	void modifyMedicines(long datid, List<Medicine> medicines);
 	void modifyOMRecord(OMRecord otherRecord);
 }

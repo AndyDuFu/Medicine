@@ -64,7 +64,7 @@ public class MedicineRecordsService implements IMedicineRecordsService {
 		modifyDATRecord(datRecord);
 		// 中药处方信息
 		List<Medicine> medicines = datParam.getMedicines();
-		modifyMedicines(medicines);
+		modifyMedicines(datRecord.getId(), medicines);
 	}
 
 	// 修改诊断治疗基本信息
@@ -75,7 +75,10 @@ public class MedicineRecordsService implements IMedicineRecordsService {
 
 	// 修改中药处方信息
 	@Override
-	public void modifyMedicines(List<Medicine> medicines) {
+	public void modifyMedicines(long datid, List<Medicine> medicines) {
+		// 保存之前，删除诊断治疗部分关联的中药处方信息重新添加
+		medicineRecordsRepository.deleteAllByDatid(datid);
+		// 重新添加传递的中药信息
 		medicineRecordsRepository.saveAll(medicines);
 	}
 

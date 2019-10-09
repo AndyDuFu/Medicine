@@ -371,12 +371,12 @@ public class BatchInstallRecords {
 	}
 
 	public static void main(String[] args) {
-		String a = "党参20g";
+		String a = "水煎至400ml，分两次温服。（出院）";
 		String reg = "[^0-9]";
 		Pattern pattern = Pattern.compile(reg);
 		Matcher matcher = pattern.matcher(a);
 		String s = ((Matcher) matcher).replaceAll("").trim();
-		String b = a.replace(s, "");
+		String b = a.replace(s, "").replace("g", "").trim();
 		System.out.println(s);
 		System.out.println(b);
 	}
