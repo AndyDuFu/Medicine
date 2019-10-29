@@ -28,7 +28,7 @@
 		<mybatis.version>2.0.2</mybatis.version>
         <pagehelper.version>1.2.5</pagehelper.version>
 		<lombda.version>1.16.18</lombda.version>
-		<fastjson.version>1.2.7</fastjson.version>
+		<fastjson.version>1.2.25</fastjson.version>
 		<springboot.version>2.0.3.RELEASE</springboot.version>
 	</properties>
 
